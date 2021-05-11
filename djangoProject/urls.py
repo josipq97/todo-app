@@ -22,5 +22,6 @@ urlpatterns = [
     path('', api_views.task_list, name='task_lists'),
     path('create-task/', api_views.create_task, name='create-task'),
     path('update-task/<int:task_id>', api_views.update_task, name='update-task'),
+    path('delete-task/<int:task_id>', api_views.delete_task, name='delete-task'),
     re_path(r'^reg/', include('registration.backends.default.urls')),
 ]

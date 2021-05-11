@@ -1,41 +1,62 @@
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
+import { IconContext } from "react-icons";
+import { AiOutlineCheckCircle, AiFillCheckCircle } from 'react-icons/ai'
+import { FiEdit } from 'react-icons/fi'
+import { MdDeleteForever } from 'react-icons/md'
 import getCookie from './functions'
 
-export default function TaskItem({t}) {
-    const [task, setTask] = useState(t)
+export default function TaskItem({deleteTask, t}) {
+    const [task, settask] = useState(t)
 
-    const handleClick = (e) =>{
-        console.log(task)
-        setTask({
+    const checkTask = () => {
+        settask({
             ...task,
             completed: !task.completed
         })
-        console.log(JSON.stringify(task))
-        const csrftoken = getCookie('csrftoken');
-        const url = `http://127.0.0.1:8000/update-task/${task.id}`;
+    }
+    
+    useEffect(() => {
+        const url = `http://127.0.0.1:8000/update-task/${task.id}`
+        const csrf_token = getCookie('csrftoken');
         fetch(url, {
-            method:'POST',
-            headers:{
-                'Content-type':'application/json',
-                'X-CSRFToken': csrftoken
+            method: 'PUT',
+            headers: {
+                'Content-type': 'application/json',
+                'X-CSRFToken': csrf_token
             },
             body: JSON.stringify(task)
         }).catch(error => {
-            setTask({
-                ...task,
-                completed: !task.completed
-            })
             console.log(error)
         })
-    }
-    
+    }, [task])
+
     return (
-        <li className={`${task.completed && 'completed'}`}>
-            {task.completed ? 
-                <i className="fas fa-check-circle" onClick={handleClick}></i> : 
-                <i className="far fa-circle" onClick={handleClick}></i>
-            }                
-            {task.title}
-        </li>
+        <div className="TaskItem__container">
+            {task.completed ?
+                <IconContext.Provider value={{ color: "blue", className: "TaskItem__icon--completed" }}>
+                    <div onClick={checkTask}>
+                    <AiFillCheckCircle />
+                    </div>
+                </IconContext.Provider> :
+              
+                <IconContext.Provider value={{ color: "blue", className: "TaskItem__icon--uncompleted" }}>
+                    <div onClick={checkTask}>
+                        <AiOutlineCheckCircle />
+                    </div>
+                </IconContext.Provider>}
+
+                <div className="TaskItem__text">
+                    <span>{task.title}</span>
+                </div>
+
+                <div className="TaskItem__edit">
+                    <FiEdit />
+                </div>
+
+                <div onClick={() => deleteTask(task.id)} className="TaskItem__delete">
+                    <MdDeleteForever />
+                </div>
+        </div>
     )
 }
+

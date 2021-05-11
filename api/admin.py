@@ -4,8 +4,8 @@ from .models import *
 
 # Register your models here.
 
-class TaskAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', 'created_by', 'created_at', 'completed', 'deleted', ]
+class TasksAdmin(admin.ModelAdmin):
+    list_display = ['id', 'title', 'completed', 'created_by',]
 
 
-admin.site.register(Task, TaskAdmin)
+admin.site.register(Tasks, TasksAdmin)

@@ -3,10 +3,11 @@ from django.contrib.auth import get_user_model
 
 
 # Create your models here.
-class Task(models.Model):
-    title = models.CharField(max_length=100, )
-    due_date = models.DateTimeField(null=True)
+class Tasks(models.Model):
+    title = models.CharField(max_length=100,)
     completed = models.BooleanField(default=False)
-    deleted = models.BooleanField(default=False)
-    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
+
+    class Meta:
+        verbose_name = 'Tasks'
+        verbose_name_plural = verbose_name

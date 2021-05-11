@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.serializers import Serializer
 from .serializers import *
 from .models import *
 
@@ -8,33 +9,42 @@ from .models import *
 # Create your views here.
 @api_view(['GET'])
 def task_list(request):
-    # tasks = Task.objects.filter(created_by=request.user)
-    tasks = Task.objects.all()
-    serializer = TaskSerializer(tasks, many=True)
+    tasks = Tasks.objects.all()
+    serializer = TasksSerializer(tasks, many=True)
     print('called')
     return Response(serializer.data)
 
 
 @api_view(['POST'])
 def create_task(request):
-    serializer = TaskSerializer(data=request.data)
+    serializer = TasksSerializer(data=request.data)
 
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
     else:
-        return Response({'message': 'Something went wrong!'})
+        return Response({'message': serializer.error_messages})
 
 
-@api_view(['POST'])
+@api_view(['PUT'])
 def update_task(request, task_id):
-    task = Task.objects.get(id=task_id)
-    print(request.data)
-    if request.user == task.created_by:
-        serializer = TaskSerializer(instance=task, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-    return Response({'message': 'Something went wrong'})
+    task = Tasks.objects.get(id=task_id)
+    serializer = TasksSerializer(instance=task, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response({'message': serializer.error_messages})
 
 
+@api_view(['DELETE'])
+def delete_task(request, task_id):
+    task = Tasks.objects.get(id=task_id)
+    serializer = TasksSerializer(task)
+    task.delete()
+    return Response(serializer.data)
+
+# Todo:
+#   # user -> provjera kod list, create, update, delete
+#   deleted tasks
+#   created_at
+#   due_date

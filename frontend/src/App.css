@@ -12,3 +12,7 @@ li{
 .completed{
     text-decoration: line-through;
 }
+
+.TaskItem__container{
+    display: flex;
+}
